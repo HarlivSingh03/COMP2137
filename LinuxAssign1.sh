@@ -1,62 +1,43 @@
 #!/bin/bash
 
-    # Hostname
     HOSTNAME=$(hostname)
 
-    # OS information
     source /etc/os-release
     OS="$PRETTY_NAME"
 
-    # Uptime
     UPTIME=$(uptime -p)
 
-    # CPU information
     CPU=$(lshw -class processor | grep -m 1 'product' | cut -d ':' -f 2 | sed 's/^[ \t]*//')
     CPU_SPEED=$(lshw -class processor | grep -m 1 'capacity' | cut -d ':' -f 2 | sed 's/^[ \t]*//')
 
-    # RAM information
     RAM=$(free -h | awk '/Mem:/ {print $2}')
 
-    # Disk information
     DISKS=$(lsblk -o NAME,MODEL,SIZE | grep -v "NAME" | awk '{print $2, $3}')
 
-    # Video card information
     VIDEO=$(lshw -class display | grep -m 1 'product' | cut -d ':' -f 2 | sed 's/^[ \t]*//')
 
-    # FQDN
     FQDN=$(hostname -f)
 
-    # Host Address
     HOST_ADDRESS=$(hostname -I | awk '{print $1}')
 
-    # Gateway IP
     GATEWAY_IP=$(ip r | awk '/default/ {print $3}')
 
-    # DNS Server
     DNS_SERVER=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
 
-    # Interface and IP Address
     INTERFACE=$(ip a | awk '/^[0-9]+:/ {sub(/:/,"",$2); iface=$2} /^[[:space:]]*inet / {print iface, $2}')
 
-    # Users Logged In
     USERS=$(who | cut -d ' ' -f 1 | sort | uniq | tr '\n' ',' | sed 's/,$//')
 
-    # Disk Space
     DISK_SPACE=$(df -h | awk '!/tmpfs|udev|Filesystem/ {print $6, $4}')
 
-    # Process Count
     PROCESS_COUNT=$(ps -e --no-headers | wc -l)
 
-    # Load Averages
     LOAD_AVERAGES=$(uptime | grep -o "load average[s:][: ].*")
     
-    # Memory Allocation
     MEMORY_ALLOCATION=$(free -h | awk '/Mem:/ {print $3 " / " $2}')
 
-    # Listening Network Ports
     LISTENING_PORTS=$(ss -tuln | awk '/LISTEN/ {print $5}' | cut -d ':' -f 2 | sort -n | uniq | tr '\n' ',' | sed 's/,$//')
 
-    # UFW Rules
     UFW_RULES=$(sudo ufw status numbered)
 
  cat << EOF
